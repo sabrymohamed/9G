@@ -568,7 +568,7 @@
             <div class="feedback"></div>
         </div>
         
-        <div class="question-item" data-answer="أ: التوالي، ب: التوازي، ج: قانون أوم، د: المقاومة الكهربائية، هـ: الجهد الكهربائي">
+        <div class="question-item" data-answers="['أ: التوالي، ب: التوازي، ج: قانون أوم، د: المقاومة الكهربائية، هـ: الجهد الكهربائي', 'أ: التوازي، ب: التوالي، ج: قانون أوم، د: الجهد الكهربائي، هـ: المقاومة الكهربائية']">
             <div class="question-title">43. تأمل الخريطة المفاهيمية للكهرباء. اختر الترتيب الصحيح للكلمات التي توضع في المواضع أ، ب، ج، د، هـ.</div>
             <div class="question-image-box">
                 <img src="https://i.postimg.cc/3wDQQWQh/khryt2t-s6.png" alt="الخريطة المفاهيمية" class="question-image">
@@ -730,15 +730,15 @@
             <div class="feedback"></div>
         </div>
 
-        <div class="question-item" data-answer="الأولى، الثانية، الأولى، الثانية">
-            <div class="question-title">57. أجب عن الأسئلة التالية (أ، ب، ت، ث) بناءً على جدول التيار المجاور بالترتيب الصحيح.</div>
+        <div class="question-item" data-answer="أ: الأولى | ب: الثانية | ت: الأولى | ث: الثانية">
+            <div class="question-title">57. أجب عن الأسئلة التالية (أ: أي من المجموعتين موصلة على التوالي؟ | ب: أي من المجموعتين موصلة على التوازي؟ | ت: أي المجموعتين تكون فيها المقاومة أكبر؟ | ث: أي المجموعتين يزداد فيها التيار الكهربائي؟) بناءً على جدول التيار المجاور بالترتيب الصحيح.</div>
             <div class="question-image-box">
                 <img src="https://i.postimg.cc/B6L6yJMj/s11-s15.png" alt="جدول التيار والأسئلة" class="question-image">
             </div>
             <div class="options">
-                <label><input type="radio" name="q57" value="الأولى، الثانية، الأولى، الثانية"> أ: الأولى | ب: الثانية | ت: الأولى | ث: الثانية</label>
-                <label><input type="radio" name="q57" value="الثانية، الأولى، الثانية، الأولى"> أ: الثانية | ب: الأولى | ت: الثانية | ث: الأولى</label>
-                <label><input type="radio" name="q57" value="الأولى، الأولى، الثانية، الثانية"> أ: الأولى | ب: الأولى | ت: الثانية | ث: الثانية</label>
+                <label><input type="radio" name="q57" value="أ: الأولى | ب: الثانية | ت: الأولى | ث: الثانية"> أ: الأولى | ب: الثانية | ت: الأولى | ث: الثانية</label>
+                <label><input type="radio" name="q57" value="أ: الثانية | ب: الأولى | ت: الثانية | ث: الأولى"> أ: الثانية | ب: الأولى | ت: الثانية | ث: الأولى</label>
+                <label><input type="radio" name="q57" value="أ: الأولى | ب: الأولى | ت: الثانية | ث: الثانية"> أ: الأولى | ب: الأولى | ت: الثانية | ث: الثانية</label>
             </div>
             <div class="feedback"></div>
         </div>
@@ -752,7 +752,6 @@
 </div>
 
 <script>
-    // رابط تطبيق جوجل لحفظ البيانات في ملف الإكسل
     const googleAppScriptURL = "https://script.google.com/macros/s/AKfycbzc5fVkbwegAw7XzRkGvcp3OmzK9UYslsBuiyJ-IY23DYm_QfAyvsBadgUw0Ob2oIW42w/exec";
 
     function submitQuiz() {
@@ -771,7 +770,6 @@
         const totalPossibleScore = questions.length * pointsPerQuestion;
 
         questions.forEach(q => {
-            const correctAnswer = q.getAttribute('data-answer');
             const feedbackDiv = q.querySelector('.feedback');
             let studentAnswer = "";
 
@@ -785,8 +783,19 @@
             }
 
             feedbackDiv.style.display = "block";
+            
+            // تحقق من الإجابات المتعددة الصحيحة
+            let isCorrect = false;
+            if (q.hasAttribute('data-answers')) {
+                const correctAnswers = q.getAttribute('data-answers').replace(/'/g, '"');
+                const answersArray = JSON.parse(correctAnswers);
+                isCorrect = answersArray.includes(studentAnswer);
+            } else {
+                const correctAnswer = q.getAttribute('data-answer');
+                isCorrect = studentAnswer === correctAnswer;
+            }
 
-            if (studentAnswer === correctAnswer) {
+            if (isCorrect) {
                 score += pointsPerQuestion;
                 feedbackDiv.className = "feedback correct";
                 feedbackDiv.innerHTML = "✔ إجابة صحيحة (+2 درجة)";
@@ -797,10 +806,19 @@
                 }
             } else {
                 feedbackDiv.className = "feedback incorrect";
-                if(studentAnswer === "") {
-                    feedbackDiv.innerHTML = `❌ لم تتم الإجابة! الإجابة الصحيحة هي: [ <b>${correctAnswer}</b> ]`;
+                
+                let correctDisplay = "";
+                if (q.hasAttribute('data-answers')) {
+                    const answersArray = JSON.parse(q.getAttribute('data-answers').replace(/'/g, '"'));
+                    correctDisplay = answersArray.join(' </b>أو<b> ');
                 } else {
-                    feedbackDiv.innerHTML = `❌ إجابة خاطئة! الإجابة الصحيحة هي: [ <b>${correctAnswer}</b> ]`;
+                    correctDisplay = q.getAttribute('data-answer');
+                }
+
+                if(studentAnswer === "") {
+                    feedbackDiv.innerHTML = `❌ لم تتم الإجابة! الإجابة الصحيحة هي: [ <b>${correctDisplay}</b> ]`;
+                } else {
+                    feedbackDiv.innerHTML = `❌ إجابة خاطئة! الإجابة الصحيحة هي: [ <b>${correctDisplay}</b> ]`;
                     if (radioChecked) {
                         radioChecked.parentElement.style.backgroundColor = "#f8d7da";
                         radioChecked.parentElement.style.borderColor = "#e74c3c";
