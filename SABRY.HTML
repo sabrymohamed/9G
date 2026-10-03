@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نشاط إلكتروني شامل - الكهرباء التيارية | أ. صبري محمد حمد</title>
+    <style>
+        :root {
+            --primary: #1e3799;
+            --secondary: #4a69bd;
+            --success: #27ae60;
+            --danger: #c0392b;
+            --bg-odd: #ffffff;
+            --bg-even: #f1f2f6;
+            --text-dark: #2f3542;
+        }
+        body {
+            background-color: #dfe4ea;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0; padding: 20px; color: var(--text-dark);
+        }
+        .container {
+            max-width: 1000px; margin: 0 auto;
+            background-color: white; box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            border-radius: 12px; padding: 40px; position: relative;
+        }
+        .header {
+            text-align: center; border-bottom: 4px solid var(--primary);
+            padding-bottom: 20px; margin-bottom: 30px;
+        }
+        .header h1 { color: var(--primary); font-size: 32px; margin-bottom: 10px; font-weight: 900; }
+        .header h2 { color: var(--secondary); font-size: 22px; margin-top: 0; }
+        
+        .student-info {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 20px;
+            margin-bottom: 30px; background: #eccc68; padding: 20px; border-radius: 8px;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .student-info label { font-weight: bold; display: block; margin-bottom: 8px; font-size: 1.1em; }
+        .student-info input, .student-info select {
+            width: 100%; padding: 12px; border: 2px solid #fff;
+            border-radius: 6px; font-size: 16px; font-family: inherit; font-weight: bold;
+        }
+        
+        .score-circle {
+            position: absolute; top: 20px; left: 20px;
+            width: 130px; height: 130px;
+            border: 6px solid var(--danger); border-radius: 50%;
+            display: flex; justify-content: center; align-items: center;
+            font-size: 32px; font-weight: 900; color: var(--danger);
+            transform: rotate(-10deg); opacity: 0; transition: all 0.6s ease;
+            background: rgba(255,255,255,0.95); z-index: 10;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2); text-align: center; direction: ltr;
+        }
+
+        .section-title {
+            background-color: var(--primary); color: white; padding: 15px;
+            border-radius: 8px; margin: 40px 0 20px 0; font-size: 1.4em; text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .question-item {
+            padding: 25px; margin-bottom: 25px; border-radius: 10px;
+            border-right: 6px solid var(--secondary);
+            transition: all 0.3s;
+        }
+        .question-item:nth-child(odd) { background-color: var(--bg-odd); border-left: 1px solid #ddd; border-top: 1px solid #ddd; border-bottom: 1px solid #ddd;}
+        .question-item:nth-child(even) { background-color: var(--bg-even); border-left: 1px solid #ddd; border-top: 1px solid #ddd; border-bottom: 1px solid #ddd;}
+        .question-item:hover { box-shadow: 0 6px 12px rgba(0,0,0,0.1); transform: translateY(-3px); }
+        
+        .question-title { font-weight: 900; font-size: 1.3em; color: var(--primary); margin-bottom: 20px; line-height: 1.5; }
+        .question-image-box { text-align: center; margin-bottom: 20px; background: #fff; padding: 10px; border: 2px dashed #aaa; border-radius: 8px;}
+        .question-image { max-width: 100%; border-radius: 5px; }
+        
+        .options { display: grid; grid-template-columns: 1fr; gap: 10px; }
+        @media(min-width: 768px) { .options.grid-2 { grid-template-columns: 1fr 1fr; } }
+        
+        .options label {
+            display: block; padding: 12px 15px;
+            background: #fff; border: 2px solid #dcdde1; border-radius: 6px;
+            cursor: pointer; transition: 0.2s; font-size: 1.1em; font-weight: bold;
+        }
+        .options label:hover { background: #f5f6fa; border-color: var(--secondary); }
+        .options input[type="radio"] { margin-left: 12px; transform: scale(1.4); cursor: pointer; }
+        
+        .dropdown-answer {
+            width: 100%; padding: 15px; border: 2px solid #dcdde1;
+            border-radius: 6px; font-size: 1.1em; font-family: inherit; font-weight: bold;
+            background-color: #fff; cursor: pointer;
+        }
+
+        .feedback {
+            margin-top: 15px; padding: 15px; border-radius: 6px; font-weight: bold; font-size: 1.1em; display: none;
+        }
+        .feedback.correct { background-color: #d4edda; color: #155724; border: 2px solid #c3e6cb; }
+        .feedback.incorrect { background-color: #f8d7da; color: #721c24; border: 2px solid #f5c6cb; }
+
+        .btn-submit {
+            display: block; width: 100%; padding: 20px;
+            background-color: var(--danger); color: white;
+            border: none; border-radius: 10px; font-size: 1.6em;
+            font-weight: 900; cursor: pointer; transition: 0.3s; margin-top: 50px;
+            box-shadow: 0 6px 12px rgba(231, 76, 60, 0.4);
+        }
+        .btn-submit:hover { background-color: #c0392b; transform: scale(1.02); }
+        
+        .footer {
+            text-align: center; margin-top: 50px; padding-top: 20px;
+            border-top: 3px solid var(--primary); color: var(--primary); font-size: 1.3em; font-weight: 900;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="score-circle" id="scoreCircle">0<br><span style="font-size:16px;">الدرجة الكلية</span></div>
+
+    <div class="header">
+        <h1>مدرسة عالي الإعدادية للبنين</h1>
+        <h2>الأنشطة الإثرائية الشاملة - الفصل الأول: الكهرباء التيارية</h2>
+        <p>إعداد المعلم: أ. محمود نبيل</p>
+    </div>
+
+    <div class="student-info">
+        <div>
+            <label>اسم الطالب الرباعي:</label>
+            <input type="text" id="studentName" placeholder="اكتب اسمك هنا بدقة..." required>
+        </div>
+        <div>
+            <label>الصف الدراسي:</label>
+            <select id="studentClass" required>
+                <option value="">-- اختر صفك --</option>
+                <option value="3ع1">3ع1</option>
+                <option value="3ع2">3ع2</option>
+                <option value="3ع3">3ع3</option>
+                <option value="3ع4">3ع4</option>
+                <option value="3ع5">3ع5</option>
+                <option value="3ع6">3ع6</option>
+            </select>
+        </div>
+    </div>
+
+    <form id="quizForm">
+        
+        <div class="section-title">أولاً: الدرس الأول - التيار الكهربائي</div>
+
+        <div class="question-item" data-answer="التيار الكهربائي">
+            <div class="question-title">1. تدفق للشحنات الكهربائية، ويقاس بوحدة أمبير. (المصطلح العلمي)</div>
+            <div class="options grid-2">
+                <label><input type="radio" name="q1" value="الجهد الكهربائي"> الجهد الكهربائي</label>
+                <label><input type="radio" name="q1" value="التيار الكهربائي"> التيار الكهربائي</label>
+                <label><input type="radio" name="q1" value="المقاومة الكهربائية"> المقاومة الكهربائية</label>
+                <label><input type="radio" name="q1" value="الدائرة الكهربائية"> الدائرة الكهربائية</label>
+            </div>
+            <div class="feedback"></div>
+        </div>
+
+        <div class="question-item" data-answer="الدائرة الكهربائية">
+            <div class="question-title">2. حلقة مغلقة من مادة موصلة، يتدفق خلالها تيار كهربائي بشكل متواصل.</div>
+            <div class="options grid-2">
+                <label><input type="radio" name="q2" value="الدائرة الكهربائية"> الدائرة الكهربائية</label>
+                <label><input type="radio" name="q2" value="التيار الكهربائي"> التيار الكهربائي</label>
+            </div>
+            <div class="feedback"></div>
+        </div>
+
+        <div class="question-item" data-answer="الجهد الكهربائي">
+            <div class="question-title">3. مقياس لمقدار ما يكتسبه كل إلكترون من طاقة وضع كهربائية، ويقاس بوحدة الفولت.</div>
+            <div class="options grid-2">
+                <label><input type="radio" name="q3" value="التيار الكهربائي"> التيار الكهربائي</label>
+                <label><input type="radio" name="q3" value="الجهد الكهربائي"> الجهد الكهربائي</label>
+            </div>
+            <div class="feedback"></div>
+        </div>
+
+        <div class="question-item" data-answer="الدائرة الكهربائية">
+            <div class="question-title">4. تأمل الرسم المجاور، ماذا يمثل هذا الرسم بشكل عام؟</div>
+            <div class="question-image-box">
+                <img src="https://i.postimg.cc/KYWDXvrr/dayrt-s1.png" alt="صورة الدائرة الكهربائية" class="question-image">
+            </div>
+            <div class="options grid-2">
+                <label><input type="radio" name="q4" value="المجال المغناطيسي"> المجال المغناطيسي</label>
+                <label><input type="radio" name="q4" value="الدائرة الكهربائية"> الدائرة الكهربائية</label>
+            </div>
+            <div class="feedback"></div>
+        </div>
+
+        <div class="question-item" data-answer="بطارية">
+            <div class="question-title">5. في نفس الرسم السابق، ما اسم الجزء المشار إليه بالحرف (أ)؟</div>
+            <div class="options grid-2">
+                <label><input type="radio" name="q5" value="مفتاح"> مفتاح</label>
+                <label><input type="radio" name="q5" value="بطارية"> بطارية</label>
+                <label><input type="radio" name="q5" value="مصباح"> مصباح</label>
+                <label><input type="radio" name="q5" value="سلك"> سلك</label>
+            </div>
+            <div class="feedback"></div>
+        </div>
+
+        <div class="question-item" data-answer="من طاقة كيميائية إلى طاقة كهربائية">
+            <div class="question-title">6. ما تحولات الطاقة في الجزء (أ) "البطارية"؟</div>
+            <select name="q6" class="dropdown-answer">
+                <option value="">-- اختر التحول الصحيح --</option>
+                <option value="من طاقة كهربائية إلى طاقة ضوئية">من طاقة كهربائية إلى طاقة ضوئية</option>
+                <option value="من طاقة كيميائية إلى طاقة كهربائية">من طاقة كيميائية إلى طاقة كهربائية</option>
+                <option value="من طاقة حركية إلى طاقة كهربائية">من طاقة حركية إلى طاقة كهربائية</option>
+            </select>
+            <div class="feedback"></div>
+        </div>
+
+        <div class="question-item" data-answer="من طاقة كهربائية إلى طاقة ضوئية وحرارية">
+            <div class="question-title">7. ما تحولات الطاقة في الجزء (ج) "المصباح"؟</div>
+            <select name="q7" class="dropdown-answer">
+                <option value="">-- اختر التحول الصحيح --</option>
+                <option value="من طاقة كهربائية إلى طاقة ضوئية وحرارية">من طاقة كهربائية إلى طاقة ضوئية وحرارية</option>
+                <option value="من طاقة حرارية إلى طاقة كهربائية">من طاقة حرارية إلى طاقة كهربائية</option>
+            </select>
+            <div class="feedback"></div>
+        </div>
+
+        <div class="question-item" data-answer="الإلكترونات">
+            <div class="question-title">8. يتدفق التيار الكهربائي في المواد الصلبة (الموصلات) بسبب تدفق:</div>
+            <div class="options grid-2">
+                <label><input type="radio" name="q8" value="الأيونات الموجبة والسالبة"> الأيونات الموجبة والسالبة</label>
+                <label><input type="radio" name="q8" value="الإلكترونات"> الإلكترونات</label>
+            </div>
+            <div class="feedback"></div>
+        </div>
+
+        <div class="question-item" data-answer="الأيونات الموجبة والسالبة">
+            <div class="question-title">9. ينتج التيار الكهربي في المواد السائلة بسبب تدفق:</div>
+            <div class="options grid-2">
+                <label><input type="radio" name="q9" value="الإلكترونات فقط"> الإلكترونات فقط</label>
+                <label><input type="radio" name="q9" value="الأيونات الموجبة والسالبة"> الأيونات الموجبة والسالبة</label>
+            </div>
+            <div class="feedback"></div>
+        </div>
+        
+        <div class="question-item" data-answer="زاد">
+            <div class="question-title">10. أكمل: كلما ازداد الجهد الكهربائي ......... مقدار طاقة الوضع الكهربائية.</div>
+            <div class="options grid-2">
+                <label><input type="radio" name="q10" value="قل"> قل</label>
+                <label><input type="radio" name="q10" value="زاد"> زاد</label>
+            </div>
+            <div class="feedback"></div>
+        </div>
+
+        <div class="question-item" data-answer="نتيجة استهلاك المواد المتفاعلة">
+            <div class="question-title">11. فسر العبارة التالية تفسيراً علمياً صحيحاً: ينتهي عمر البطارية بعد فترة من الاستخدام.</div>
+            <select name="q11" class="dropdown-answer">
+                <option value="">-- اختر التفسير --</option>
+                <option value="بسبب زيادة المقاومة">بسبب زيادة المقاومة</option>
+                <option value="نتيجة استهلاك المواد المتفاعلة">نتيجة استهلاك المواد المتفاعلة</option>
+                <option value="بسبب انصهار المنصهر">بسبب انصهار المنصهر</option>
+            </select>
+            <div class="feedback"></div>
+        </div>
+
+        <div class="section-title">ثانياً: المقاومة الكهربائية</div>
+
+        <div class="question-item" data-answer="المقاومة الكهربائية">
+            <div class="question-title">12. الممانعة التي تبديها المادة لمرور التيار الكهربائي، وتقاس بوحدة الأوم (Ω).</div>
+            <div class="options grid-2">
+                <label><input type="radio" name="q12" value="الجهد الكهربائي"> الجهد الكهربائي</label>
+                <label><input type="radio" name="q12" value="المقاومة الكهربائية"> المقاومة الكهربائية</label>
+            </div>
+            <div class="feedback"></div>
+        </div>
+
+        <div class="question-item" data-answer="فتيل المصباح">
+            <div class="question-title">13. سلك رفيع جداً، مقاومته كبيرة وعند سريان التيار الكهربائي يسخن لدرجة كافية لانبعاث الضوء عنه.</div>
+            <div class="options grid-2">
+                <label><input type="radio" name="q13" value="المنصهر الكهربائي"> المنصهر الكهربائي</label>
+                <label><input type="radio" name="q13" value="فتيل المصباح"> فتيل المصباح</label>
+            </div>
+            <div class="feedback"></div>
+        </div>
+
+        <div class="question-item" data-answer="أ">
+            <div class="question-title">14. أي من العبارات التالية لا تتفق مع كيفية سريان التيار الكهربائي في الدائرة الكهربائية؟</div>
+            <div class="options">
+                <label><input type="radio" name="q14" value="أ"> أ. يكمل كل الكترون دورة كاملة عبر الدائرة</label>
+                <label><input type="radio" name="q14" value="ب"> ب. تتحرك الإلكترونات في الدائرة ببطء</label>
+                <label><input type="radio" name="q14" value="ج"> ج. تنتج البطارية مجالاً كهربائياً داخل السلك</label>
+                <label><input type="radio" name="q14" value="د"> د. يؤثر المجال الكهربائي بقوة في الإلكترونات</label>
+            </div>
+            <div class="feedback"></div>
+        </div>
+
+        <div class="question-item" data-answer="أ">
+            <div class="question-title">15. كيف يمكن زيادة المقاومة الكهربائية لسلك؟</div>
+            <div class="options grid-2">
+                <label><input type="radio" name="q15" value="أ"> أ. زيادة طوله</label>
+                <label><input type="radio" name="q15" value="ب"> ب. إنقاص طوله</label>
+                <label><input type="radio" name="q15" value="ج"> ج. زيادة قطره</label>
+                <label><input type="radio" name="q15" value="د"> د. زيادة مساحة المقطع</label>
+            </div>
+            <div class="feedback"></div>
+        </div>
+
+        <div class="question-item" data-answer="د">
+            <div class="question-title">16. ما شكل الطاقة التي تمتلكها الإلكترونات، وتمثل مقياس للجهد الكهربائي في الدائرة الكهربائية؟</div>
+            <div class="options grid-2">
+                <label><input type="radio" name="q16" value="أ"> أ. الطاقة الحرارية</label>
+                <label><input type="radio" name="q16" value="ب"> ب. الطاقة المغناطيسية</label>
+                <label><input type="radio" name="q16" value="ج"> ج. الطاقة الحركية</label>
+                <label><input type="radio" name="q16" value="د"> د. طاقة الوضع الكهربائية</label>
+            </div>
+            <div class="feedback"></div>
+        </div>
+
+        <div class="question-item" data-answer="ج">
+            <div class="question-title">17. يوضح الشكل أربعة موصلات من النحاس. أي هذه الموصلات الأربعة مقاومته الكهربية أصغر؟</div>
+            <div class="question-image-box">
+                <img src="https://i.postimg.cc/pdSJNXYG/mwslat-s2.png" alt="صورة الموصلات" class="question-image">
+            </div>
+            <div class="options grid-2">
+                <label><input type="radio" name="q17" value="أ"> الموصل أ</label>
+                <label><input type="radio" name="q17" value="ب"> الموصل ب</label>
+                <label><input type="radio" name="q17" value="ج"> الموصل ج (الأقصر والأسمك)</label>
+                <label><input type="radio" name="q17" value="د"> الموصل د</label>
+            </div>
+            <div class="feedback"></div>
+        </div>
+
+        <div class="question-item" data-answer="لأنه من أفضل الموصلات ومقاومته قليلة ولا يسخن بسرعة">
+            <div class="question-title">18. علل: يستخدم النحاس في التمديدات الكهربائية في الأبنية.</div>
+            <select name="q18" class="dropdown-answer">
+                <option value="">-- اختر التعليل الصحيح --</option>
+                <option value="لأنه من أفضل الموصلات ومقاومته قليلة ولا يسخن بسرعة">لأنه من أفضل الموصلات ومقاومته قليلة ولا يسخن بسرعة</option>
+                <option value="لأن مقاومته عالية جدا ويتحمل الحرارة">لأن مقاومته عالية جدا ويتحمل الحرارة</option>
+            </select>
+            <div class="feedback"></div>
+        </div>
+
+        <div class="question-item" data-answer="لأن درجة انصهاره عالية جداً">
+            <div class="question-title">19. علل: تصنع فتيلة المصباح الكهربائي من مادة التنجستن.</div>
+            <select name="q19" class="dropdown-answer">
+                <option value="">-- اختر التعليل الصحيح --</option>
+                <option value="لأن مقاومته قليلة ولا يسخن">لأن مقاومته قليلة ولا يسخن</option>
+                <option value="لأن درجة انصهاره عالية جداً">لأن درجة انصهاره عالية جداً</option>
+            </select>
+            <div class="feedback"></div>
+        </div>
+
+        <div class="question-item" data-answer="جميع ما سبق">
+            <div class="question-title">20. من العوامل التي تعتمد عليها المقاومة الكهربائية للأسلاك:</div>
+            <div class="options grid-2">
+                <label><input type="radio" name="q20" value="نوع مادة السلك فقط"> نوع مادة السلك فقط</label>
+                <label><input type="radio" name="q20" value="طول السلك وسمكه فقط"> طول السلك وسمكه فقط</label>
+                <label><input type="radio" name="q20" value="جميع ما سبق"> جميع ما سبق (نوع المادة، الطول، السمك)</label>
+            </div>
+            <div class="feedback"></div>
+        </div>
+
+        <div class="section-title">ثالثاً: الدرس الثاني - توجيه التيار الكهربائي وقانون أوم</div>
+
+        <div class="question-item" data-answer="الجهد الكهربائي والمقاومة الكهربائية">
+            <div class="question-title">21. ما هي العوامل المؤثرة على مقدار التيار الكهربائي المار في الدائرة؟</div>
+            <div class="options">
+                <label><input type="radio" name="q21" value="الجهد الكهربائي والمقاومة الكهربائية"> الجهد الكهربائي والمقاومة الكهربائية</label>
+                <label><input type="radio" name="q21" value="طول السلك فقط"> طول السلك فقط</label>
+            </div>
+            <div class="feedback"></div>
+        </div>
+
+        <div class="question-item" data-answer="الجهد = التيار × المقاومة (جـ = ت × م)">
+            <div class="question-title">22. أي العلاقات التالية تمثل نص قانون أوم بشكل صحيح؟</div>
+            <div class="options">
+                <label><input type="radio" name="q22" value="الجهد = التيار × المقاومة (جـ = ت × م)"> الجهد = التيار × المقاومة (جـ = ت × م)</label>
+                <label><input type="radio" name="q22" value="التيار = الجهد × المقاومة"> التيار = الجهد × المقاومة</label>
+            </div>
+            <div class="feedback"></div>
+        </div>
+
+        <div class="question-item" data-answer="120 فولت">
+            <div class="question-title">23. (مسألة): إذا وصلت مكواة مقاومتها 24 أوم بمقبس، ومر تيار مقداره 5 أمبير، فاحسب قيمة الجهد الكهربائي.</div>
+            <div class="options grid-2">
+                <label><input type="radio" name="q23" value="4.8 فولت"> 4.8 فولت</label>
+                <label><input type="radio" name="q23" value="120 فولت"> 120 فولت</label>
+                <label><input type="radio" name="q23" value="29 فولت"> 29 فولت</label>
+            </div>
+            <div class="feedback"></div>
+        </div>
+
+        <div class="question-item" data-answer="0.1 أمبير">
+            <div class="question-title">24. (مسألة): ما مقدار التيار المار في مصباح يدوي مقاومته 30 أوم إذا كان يعمل على بطارية جهدها 3 فولت؟</div>
+            <div class="options grid-2">
+                <label><input type="radio" name="q24" value="10 أمبير"> 10 أمبير</label>
+                <label><input type="radio" name="q24" value="90 أمبير"> 90 أمبير</label>
+                <label><input type="radio" name="q24" value="0.1 أمبير"> 0.1 أمبير</label>
+            </div>
+            <div class="feedback"></div>
+        </div>
+
+        <div class="question-item" data-answer="110 أوم">
+            <div class="question-title">25. (مسألة): ما مقاومة مصباح كهربائي يمر فيه تيار 1 أمبير إذا وصل بمقبس جهده 110 فولت؟</div>
+            <div class="options grid-2">
+                <label><input type="radio" name="q25" value="110 أوم"> 110 أوم</label>
+                <label><input type="radio" name="q25" value="111 أوم"> 111 أوم</label>
+            </div>
+            <div class="feedback"></div>
+        </div>
+
+        <div class="section-title">رابعاً: الدوائر الموصولة على التوالي والتوازي</div>
+
+        <div class="question-item" data-answer="دائرة التوصيل على التوالي">
+            <div class="question-title">26. دائرة تتضمن مسار واحد للتيار الكهربائي ليسري خلاله.</div>
+            <div class="options grid-2">
+                <label><input type="radio" name="q26" value="دائرة التوصيل على التوازي"> دائرة التوصيل على التوازي</label>
+                <label><input type="radio" name="q26" value="دائرة التوصيل على التوالي"> دائرة التوصيل على التوالي</label>
+            </div>
+            <div class="feedback"></div>
+        </div>
+
+        <div class="question-item" data-answer="دائرة التوصيل على التوازي">
+            <div class="question-title">27. دائرة تحتوي على أكثر من تفرع (مسار) يمكن أن يسري فيه التيار الكهربائي.</div>
+            <div class="options grid-2">
+                <label><input type="radio" name="q27" value="دائرة التوصيل على التوالي"> دائرة التوصيل على التوالي</label>
+                <label><input type="radio" name="q27" value="دائرة التوصيل على التوازي"> دائرة التوصيل على التوازي</label>
+            </div>
+            <div class="feedback"></div>
+        </div>
+
+        <div class="question-item" data-answer="تنطفئ جميع المصابيح ولا يمر تيار">
+            <div class="question-title">28. ماذا يحدث إذا تلف أحد المصابيح في دائرة التوصيل على التوالي؟</div>
+            <div class="options">
+                <label><input type="radio" name="q28" value="يمر التيار في المصباح الآخر"> يمر التيار في المصباح الآخر بشكل طبيعي</label>
+                <label><input type="radio" name="q28" value="تنطفئ جميع المصابيح ولا يمر تيار"> تنطفئ جميع المصابيح ولا يمر تيار</label>
+            </div>
+            <div class="feedback"></div>
+        </div>
+
+        <div class="question-item" data-answer="يمر التيار في المصباح الآخر">
+            <div class="question-title">29. ماذا يحدث إذا تلف أحد المصابيح في دائرة التوصيل على التوازي؟</div>
+            <div class="options">
+                <label><input type="radio" name="q29" value="تنطفئ جميع المصابيح"> تنطفئ جميع المصابيح</label>
+                <label><input type="radio" name="q29" value="يمر التيار في المصباح الآخر"> يمر التيار في المصباح الآخر ولا تتأثر الدائرة</label>
+            </div>
+            <div class="feedback"></div>
+        </div>
+
+        <div class="question-item" data-answer="توالي">
+            <div class="question-title">30. من خلال الشكل المجاور للدائرة البسيطة (3 مصابيح متصلة خلف بعضها). ما طريقة توصيل المصابيح؟</div>
+            <div class="question-image-box">
+                <img src="https://i.postimg.cc/CK2syLH4/twsyl-s4.png" alt="توصيل الدائرة" class="question-image">
+            </div>
+            <div class="options grid-2">
+                <label><input type="radio" name="q30" value="توالي"> توالي</label>
+                <label><input type="radio" name="q30" value="توازي"> توازي</label>
+            </div>
+            <div class="feedback"></div>
+        </div>
+
+        <div class="question-item" data-answer="المقاومة تقل - التيار يزيد">
+            <div class="question-title">31. في دائرة التوالي السابقة، إذا أزيل مصباح وأغلقت الدائرة بدونه، ماذا يحدث للمقاومة والتيار؟</div>
+            <div class="options">
+                <label><input type="radio" name="q31" value="المقاومة تزداد - التيار يقل"> المقاومة تزداد - التيار يقل</label>
+                <label><input type="radio" name="q31" value="المقاومة تقل - التيار يزيد"> المقاومة الكهربائية تقل - التيار الكهربائي يزيد</label>
+            </div>
+            <div class="feedback"></div>
+        </div>
+
+        <div class="question-item" data-answer="لأن في التوصيل على التوازي إذا قطع مسار تظل باقي الأجهزة تعمل">
+            <div class="question-title">32. فسر: يستخدم التوصيل على التوازي في المنازل بدلاً من التوالي.</div>
+            <select name="q32" class="dropdown-answer">
+                <option value="">-- اختر التفسير --</option>
+                <option value="لأن في التوصيل على التوازي تزداد المقاومة الكلية">لأن في التوصيل على التوازي تزداد المقاومة الكلية</option>
+                <option value="لأن في التوصيل على التوازي إذا قطع مسار تظل باقي الأجهزة تعمل">لأن في التوصيل على التوازي إذا قطع مسار أو أزيل جهاز تظل باقي الأجهزة تعمل</option>
+            </select>
+            <div class="feedback"></div>
+        </div>
+
+        <div class="section-title">خامساً: القدرة والطاقة الكهربائية</div>
+
+        <div class="question-item" data-answer="التحول في الطاقة من شكل لآخر">
+            <div class="question-title">33. ما المقصود بالقدرة الكهربائية؟</div>
+            <div class="options">
+                <label><input type="radio" name="q33" value="التحول في الطاقة من شكل لآخر"> التحول في الطاقة من شكل لآخر (أو معدل التحول)</label>
+                <label><input type="radio" name="q33" value="مقدار الشحنات المارة"> مقدار الشحنات المارة في الثانية</label>
+            </div>
+            <div class="feedback"></div>
+        </div>
+
+        <div class="question-item" data-answer="مقدار الطاقة المستهلكة (الكيلو واط ساعة)">
+            <div class="question-title">34. علام يدل الرمز kWh وماذا يقيس؟</div>
+            <div class="options">
+                <label><input type="radio" name="q34" value="مقدار الجهد الكهربائي"> مقدار الجهد الكهربائي</label>
+                <label><input type="radio" name="q34" value="مقدار الطاقة المستهلكة (الكيلو واط ساعة)"> يدل على الكيلو واط ساعة ويقيس مقدار الطاقة المستهلكة</label>
+            </div>
+            <div class="feedback"></div>
+        </div>
+
+        <div class="question-item" data-answer="220 فولت">
+            <div class="question-title">35. (مسألة): تعمل مجففة ملابس بقدرة (4400 واط) وتيار (20 أمبير). احسب مقدار الجهد.</div>
+            <div class="options grid-2">
+                <label><input type="radio" name="q35" value="220 فولت"> 220 فولت</label>
+                <label><input type="radio" name="q35" value="88000 فولت"> 88000 فولت</label>
+            </div>
+            <div class="feedback"></div>
+        </div>
+
+        <div class="question-item" data-answer="39.6 فلس">
+            <div class="question-title">36. (تابع المسألة): احسب ثمن الطاقة للمجففة السابقة (4400 واط) إذا عملت لمدة 3 ساعات بسعر 3 فلس للكيلو واط.ساعة.</div>
+            <div class="options grid-2">
+                <label><input type="radio" name="q36" value="39600 فلس"> 39600 فلس</label>
+                <label><input type="radio" name="q36" value="39.6 فلس"> 39.6 فلس</label>
+            </div>
+            <div class="feedback"></div>
+        </div>
+
+        <div class="question-item" data-answer="2.2 أمبير">
+            <div class="question-title">37. (مسألة): مصباح مقاومته 100 أوم وموصل بجهد 220 فولت. ما مقدار التيار؟</div>
+            <div class="options grid-2">
+                <label><input type="radio" name="q37" value="22000 أمبير"> 22000 أمبير</label>
+                <label><input type="radio" name="q37" value="2.2 أمبير"> 2.2 أمبير</label>
+            </div>
+            <div class="feedback"></div>
+        </div>
+
+        <div class="question-item" data-answer="484 واط">
+            <div class="question-title">38. (تابع المسألة): ما القدرة الكهربائية التي يستهلكها هذا المصباح؟ (التيار=2.2، الجهد=220)</div>
+            <div class="options grid-2">
+                <label><input type="radio" name="q38" value="484 واط"> 484 واط</label>
+                <label><input type="radio" name="q38" value="100 واط"> 100 واط</label>
+            </div>
+            <div class="feedback"></div>
+        </div>
+
+        <div class="question-item" data-answer="29.04 فلس">
+            <div class="question-title">39. (تابع): احسب ثمن الطاقة للمصباح (قدرته 484 واط) خلال 20 ساعة بسعر 3 فلس.</div>
+            <div class="options grid-2">
+                <label><input type="radio" name="q39" value="29.04 فلس"> 29.04 فلس</label>
+                <label><input type="radio" name="q39" value="29040 فلس"> 29040 فلس</label>
+            </div>
+            <div class="feedback"></div>
+        </div>
+
+        <div class="section-title">سادساً: الكهرباء والسلامة</div>
+
+        <div class="question-item" data-answer="جميع ما سبق">
+            <div class="question-title">40. من إرشادات السلامة لتجنب الصدمة الكهربائية:</div>
+            <div class="options">
+                <label><input type="radio" name="q40" value="لا تستخدم الأجهزة عندما تكون وصلاتها محطمة"> لا تستخدم الأجهزة عندما تكون وصلاتها محطمة</label>
+                <label><input type="radio" name="q40" value="تجنب ملامسة الماء عند التوصيل"> تجنب ملامسة الماء عند التوصيل</label>
+                <label><input type="radio" name="q40" value="جميع ما سبق"> جميع ما سبق صحيح</label>
+            </div>
+            <div class="feedback"></div>
+        </div>
+
+        <div class="question-item" data-answer="ينصهر السلك الفلزي عند زيادة التيار لتنفتح الدائرة">
+            <div class="question-title">41. كيف تعمل المنصهرات (الفيوزات) لحماية الدوائر؟</div>
+            <div class="question-image-box">
+                <img src="https://i.postimg.cc/cJzBq4MD/mnshr-s6.png" alt="صورة المنصهر" class="question-image">
+            </div>
+            <div class="options">
+                <label><input type="radio" name="q41" value="ينصهر السلك الفلزي عند زيادة التيار لتنفتح الدائرة"> يحتوي سلك فلزي رفيع ينصهر عند زيادة التيار عن مقدار معين لتنفتح الدائرة</label>
+                <label><input type="radio" name="q41" value="يقلل من قيمة الجهد"> يقلل من قيمة الجهد تلقائياً</label>
+            </div>
+            <div class="feedback"></div>
+        </div>
+
+        <div class="question-item" data-answer="مرور التيار الكهربائي داخل جسم الإنسان">
+            <div class="question-title">42. ما الذي يسبب الأذى لجسم الإنسان عند حدوث الصدمة الكهربائية؟</div>
+            <div class="options">
+                <label><input type="radio" name="q42" value="الجهد العالي فقط"> الجهد العالي فقط دون تيار</label>
+                <label><input type="radio" name="q42" value="مرور التيار الكهربائي داخل جسم الإنسان"> مرور التيار الكهربائي داخل جسم الإنسان</label>
+            </div>
+            <div class="feedback"></div>
+        </div>
+        
+        <div class="question-item" data-answer="صحيح">
+            <div class="question-title">43. الخريطة المفاهيمية للكهرباء (اكتملت في المرفقات)، هل الدوائر توصل على التوالي والتوازي؟</div>
+            <div class="question-image-box">
+                <img src="https://i.postimg.cc/wBrQKTc2/khrytt-s6.png" alt="الخريطة المفاهيمية" class="question-image">
+            </div>
+            <div class="options grid-2">
+                <label><input type="radio" name="q43" value="صحيح"> صحيح</label>
+                <label><input type="radio" name="q43" value="خطأ"> خطأ</label>
+            </div>
+            <div class="feedback"></div>
+        </div>
+
+        <div class="section-title">سابعاً: أنشطة إثرائية من الاختبارات الوطنية</div>
+
+        <div class="question-item" data-answer="د">
+            <div class="question-title">44. ما الخاصية التي تزداد في السلك الموصل في دائرة كهربائية إذا زاد طوله؟</div>
+            <div class="options grid-2">
+                <label><input type="radio" name="q44" value="أ"> أ- الجهد</label>
+                <label><input type="radio" name="q44" value="ب"> ب- التيار</label>
+                <label><input type="radio" name="q44" value="ج"> ج- الشحنة</label>
+                <label><input type="radio" name="q44" value="د"> د- المقاومة</label>
+            </div>
+            <div class="feedback"></div>
+        </div>
+
+        <div class="question-item" data-answer="ب">
+            <div class="question-title">45. من الرسم البياني (العلاقة بين المقاومة والقدرة)، كيف تتغير المقاومة إذا زادت القدرة من 500 واط إلى 2000 واط؟</div>
+            <div class="question-image-box">
+                <img src="https://i.postimg.cc/KYWDXvrJ/mqawmt-qdrt-s7.png" alt="رسم بياني" class="question-image">
+            </div>
+            <div class="options grid-2">
+                <label><input type="radio" name="q45" value="أ"> أ- تزداد 4 اضعاف</label>
+                <label><input type="radio" name="q45" value="ب"> ب- تقل إلى الربع</label>
+                <label><input type="radio" name="q45" value="ج"> ج- تزداد إلى الضعف</label>
+                <label><input type="radio" name="q45" value="د"> د- تقل إلى النصف</label>
+            </div>
+            <div class="feedback"></div>
+        </div>
+
+        <div class="question-item" data-answer="أ">
+            <div class="question-title">46. فرق الجهد 10 فولت والمقاومة 5 أوم، ما شدة التيار؟</div>
+            <div class="options grid-2">
+                <label><input type="radio" name="q46" value="أ"> أ- 2 أمبير</label>
+                <label><input type="radio" name="q46" value="ب"> ب- 5 أمبير</label>
+                <label><input type="radio" name="q46" value="ج"> ج- 10 أمبير</label>
+            </div>
+            <div class="feedback"></div>
+        </div>
+
+        <div class="question-item" data-answer="د">
+            <div class="question-title">47. أي العبارات التالية غير صحيحة فيما يتعلق بالمقاومة الكهربائية لسلك؟</div>
+            <div class="options">
+                <label><input type="radio" name="q47" value="أ"> أ- تزداد المقاومة بزيادة طول السلك</label>
+                <label><input type="radio" name="q47" value="ب"> ب- تزداد درجة حرارة السلك بزيادة المقاومة</label>
+                <label><input type="radio" name="q47" value="د"> د- المقاومة تزداد بزيادة قطر السلك (هذه العبارة غير صحيحة)</label>
+            </div>
+            <div class="feedback"></div>
+        </div>
+
+        <div class="question-item" data-answer="أ">
+            <div class="question-title">48. في أي من الدوائر الكهربائية تظهر القراءة الصحيحة لجهاز الأميتر إذا كانت المقاومة 220 أوم؟ (الجهد 110)</div>
+            <div class="question-image-box">
+                <img src="https://i.postimg.cc/9fkY3FtY/amytr-dwayr-s8.png" alt="دوائر" class="question-image">
+            </div>
+            <div class="options grid-2">
+                <label><input type="radio" name="q48" value="أ"> الدائرة (أ) - يقرأ 0.5 أمبير</label>
+                <label><input type="radio" name="q48" value="ب"> الدائرة (ب) - يقرأ 1 أمبير</label>
+                <label><input type="radio" name="q48" value="ج"> الدائرة (ج) - يقرأ 0.25 أمبير</label>
+            </div>
+            <div class="feedback"></div>
+        </div>
+
+        <div class="question-item" data-answer="د">
+            <div class="question-title">49. مصباحان على التوالي، قراءة A1 تساوي 0.2 أمبير. أين نضع الأميتر A2 لتصبح قراءته مساوية لـ A1؟</div>
+            <div class="question-image-box">
+                <img src="https://i.postimg.cc/FK6VtsgC/mwdʿ-A2-s8.png" alt="موضع الأميتر" class="question-image">
+            </div>
+            <div class="options grid-2">
+                <label><input type="radio" name="q49" value="أ"> أ- الموضع (س)</label>
+                <label><input type="radio" name="q49" value="ب"> ب- الموضع (ص)</label>
+                <label><input type="radio" name="q49" value="ج"> ج- الموضع (ع)</label>
+                <label><input type="radio" name="q49" value="د"> د- الموضع (ل)</label>
+            </div>
+            <div class="feedback"></div>
+        </div>
+
+        <div class="question-item" data-answer="ب">
+            <div class="question-title">50. أي من الرسوم البيانية التالية يصف العلاقة بين طول السلك ومقدار التيار الكهربائي؟ (علاقة عكسية)</div>
+            <div class="question-image-box">
+                <img src="https://i.postimg.cc/vmKtRHLz/twl-tyar-s9.png" alt="رسوم بيانية للطول والتيار" class="question-image">
+            </div>
+            <div class="options grid-2">
+                <label><input type="radio" name="q50" value="أ"> الرسم (أ)</label>
+                <label><input type="radio" name="q50" value="ب"> الرسم (ب) المنحنى النازل</label>
+                <label><input type="radio" name="q50" value="ج"> الرسم (ج)</label>
+                <label><input type="radio" name="q50" value="د"> الرسم (د)</label>
+            </div>
+            <div class="feedback"></div>
+        </div>
+
+        <div class="question-item" data-answer="أ">
+            <div class="question-title">51. ما عدد المسارات التي يمكن أن يسري فيها التيار في دائرة موصولة على التوالي؟</div>
+            <div class="options grid-2">
+                <label><input type="radio" name="q51" value="أ"> أ- واحد</label>
+                <label><input type="radio" name="q51" value="ب"> ب- إثنان</label>
+                <label><input type="radio" name="q51" value="ج"> ج- ثلاثة</label>
+            </div>
+            <div class="feedback"></div>
+        </div>
+
+        <div class="question-item" data-answer="ب">
+            <div class="question-title">52. لماذا يصنع فتيل المصباح من التنجستين؟</div>
+            <div class="options">
+                <label><input type="radio" name="q52" value="أ"> أ- لأن مقاومته صغيرة وانصهاره عالي</label>
+                <label><input type="radio" name="q52" value="ب"> ب- لأن مقاومته كبيرة، ودرجة انصهاره عالية جداً</label>
+            </div>
+            <div class="feedback"></div>
+        </div>
+
+        <div class="question-item" data-answer="9 فلس">
+            <div class="question-title">53. تشغيل 3 مصابيح (50، 100، 150 واط) معاً لمدة 10 ساعات، سعر الـ kWh هو 3 فلس. احسب التكلفة.</div>
+            <div class="options grid-2">
+                <label><input type="radio" name="q53" value="3 فلس"> 3 فلس</label>
+                <label><input type="radio" name="q53" value="9 فلس"> 9 فلس</label>
+                <label><input type="radio" name="q53" value="300 فلس"> 300 فلس</label>
+            </div>
+            <div class="feedback"></div>
+        </div>
+
+        <div class="question-item" data-answer="كلما زاد عدد المصابيح زادت المقاومة">
+            <div class="question-title">54. بالاعتماد على الرسم البياني لعدد المصابيح (على التوالي) والمقاومة الكلية. ما العلاقة بينهما؟</div>
+            <div class="question-image-box">
+                <img src="https://i.postimg.cc/vmKtRHLX/msabyh-mqawmt-s10.png" alt="رسم المصابيح" class="question-image">
+            </div>
+            <div class="options">
+                <label><input type="radio" name="q54" value="علاقة عكسية"> علاقة عكسية</label>
+                <label><input type="radio" name="q54" value="كلما زاد عدد المصابيح زادت المقاومة"> علاقة طردية: كلما زاد عدد المصابيح زادت المقاومة الكلية</label>
+            </div>
+            <div class="feedback"></div>
+        </div>
+
+        <div class="question-item" data-answer="150 أوم">
+            <div class="question-title">55. من الرسم البياني السابق، كم تكون قيمة المقاومة عند توصيل 3 مصابيح على التوالي؟</div>
+            <div class="options grid-2">
+                <label><input type="radio" name="q55" value="50 أوم"> 50 أوم</label>
+                <label><input type="radio" name="q55" value="100 أوم"> 100 أوم</label>
+                <label><input type="radio" name="q55" value="150 أوم"> 150 أوم</label>
+            </div>
+            <div class="feedback"></div>
+        </div>
+
+        <div class="question-item" data-answer="فرن الميكروويف">
+            <div class="question-title">56. بناءً على جدول استهلاك الأجهزة (الخلاطة 800W لـ3س، الميكروويف 1000W لـ3س، التلفاز 300W لـ5س، المجفف 1200W لـ2س)، أيها أكثر تكلفة في الاستهلاك؟</div>
+            <div class="options grid-2">
+                <label><input type="radio" name="q56" value="التلفاز الملون"> التلفاز الملون</label>
+                <label><input type="radio" name="q56" value="مجفف الشعر"> مجفف الشعر</label>
+                <label><input type="radio" name="q56" value="فرن الميكروويف"> فرن الميكروويف (3000 واط.ساعة)</label>
+            </div>
+            <div class="feedback"></div>
+        </div>
+
+        <div class="question-item" data-answer="المجموعة الأولى">
+            <div class="question-title">57. من جدول التيار: المجموعة الأولى (3 مصابيح=1.5A، 4 مصابيح=1.12A). المجموعة الثانية (3 مصابيح=13.4A، 4 مصابيح=18A). أيهما موصلة على التوالي؟</div>
+            <div class="options grid-2">
+                <label><input type="radio" name="q57" value="المجموعة الأولى"> المجموعة الأولى (لأن التيار قل)</label>
+                <label><input type="radio" name="q57" value="المجموعة الثانية"> المجموعة الثانية (لأن التيار زاد)</label>
+            </div>
+            <div class="feedback"></div>
+        </div>
+
+        <button type="button" class="btn-submit" onclick="submitQuiz()">تسليم الإجابات وإظهار الدرجة</button>
+    </form>
+
+    <div class="footer">
+        تصميم: صبري محمد حمد &nbsp; | &nbsp; 36864227
+    </div>
+</div>
+
+<script>
+    // ضع رابط تطبيق جوجل هنا ليتم حفظ البيانات في ملف الإكسل
+    const googleAppScriptURL = "ضع_رابط_سكربت_جوجل_هنا_كما_شرحت_لك_سابقا";
+
+    function submitQuiz() {
+        const studentName = document.getElementById('studentName').value.trim();
+        const studentClass = document.getElementById('studentClass').value;
+        
+        if (!studentName || !studentClass) {
+            alert("⚠️ يرجى كتابة اسمك الرباعي واختيار صفك قبل التسليم!");
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            return;
+        }
+
+        const questions = document.querySelectorAll('.question-item');
+        let score = 0;
+        const pointsPerQuestion = 2;
+        const totalPossibleScore = questions.length * pointsPerQuestion;
+
+        questions.forEach(q => {
+            const correctAnswer = q.getAttribute('data-answer');
+            const feedbackDiv = q.querySelector('.feedback');
+            let studentAnswer = "";
+
+            const radioChecked = q.querySelector('input[type="radio"]:checked');
+            const selectDropdown = q.querySelector('select');
+
+            if (radioChecked) {
+                studentAnswer = radioChecked.value;
+            } else if (selectDropdown) {
+                studentAnswer = selectDropdown.value;
+            }
+
+            feedbackDiv.style.display = "block";
+
+            if (studentAnswer === correctAnswer) {
+                score += pointsPerQuestion;
+                feedbackDiv.className = "feedback correct";
+                feedbackDiv.innerHTML = "✔ إجابة صحيحة (+2 درجة)";
+                
+                if (radioChecked) {
+                    radioChecked.parentElement.style.backgroundColor = "#d4edda";
+                    radioChecked.parentElement.style.borderColor = "#27ae60";
+                }
+            } else {
+                feedbackDiv.className = "feedback incorrect";
+                if(studentAnswer === "") {
+                    feedbackDiv.innerHTML = `❌ لم تتم الإجابة! الإجابة الصحيحة هي: [ <b>${correctAnswer}</b> ]`;
+                } else {
+                    feedbackDiv.innerHTML = `❌ إجابة خاطئة! الإجابة الصحيحة هي: [ <b>${correctAnswer}</b> ]`;
+                    if (radioChecked) {
+                        radioChecked.parentElement.style.backgroundColor = "#f8d7da";
+                        radioChecked.parentElement.style.borderColor = "#e74c3c";
+                        radioChecked.parentElement.style.color = "#c0392b";
+                    }
+                }
+            }
+        });
+
+        const circle = document.getElementById('scoreCircle');
+        circle.innerHTML = `${score} / ${totalPossibleScore}<br><span style="font-size:16px;">الدرجة الكلية</span>`;
+        circle.style.opacity = "1";
+        
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+
+        const btn = document.querySelector('.btn-submit');
+        btn.disabled = true;
+        btn.style.backgroundColor = "#7f8c8d";
+        btn.innerText = "تم التسليم بنجاح";
+
+        if(googleAppScriptURL !== "ضع_رابط_سكربت_جوجل_هنا_كما_شرحت_لك_سابقا" && googleAppScriptURL.startsWith("http")) {
+            fetch(googleAppScriptURL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    name: studentName,
+                    className: studentClass,
+                    score: `${score} / ${totalPossibleScore}`
+                })
+            }).then(() => console.log('تم الإرسال لجدول البيانات بنجاح.'));
+        }
+    }
+</script>
+
+</body>
+</html>
