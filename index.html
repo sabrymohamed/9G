@@ -568,14 +568,15 @@
             <div class="feedback"></div>
         </div>
         
-        <div class="question-item" data-answer="صحيح">
-            <div class="question-title">43. الخريطة المفاهيمية للكهرباء (اكتملت في المرفقات)، هل الدوائر توصل على التوالي والتوازي؟</div>
+        <div class="question-item" data-answer="أ: التوالي، ب: التوازي، ج: قانون أوم، د: المقاومة الكهربائية، هـ: الجهد الكهربائي">
+            <div class="question-title">43. تأمل الخريطة المفاهيمية للكهرباء. اختر الترتيب الصحيح للكلمات التي توضع في المواضع أ، ب، ج، د، هـ.</div>
             <div class="question-image-box">
-                <img src="https://i.postimg.cc/wBrQKTc2/khrytt-s6.png" alt="الخريطة المفاهيمية" class="question-image">
+                <img src="https://i.postimg.cc/3wDQQWQh/khryt2t-s6.png" alt="الخريطة المفاهيمية" class="question-image">
             </div>
-            <div class="options grid-2">
-                <label><input type="radio" name="q43" value="صحيح"> صحيح</label>
-                <label><input type="radio" name="q43" value="خطأ"> خطأ</label>
+            <div class="options">
+                <label><input type="radio" name="q43" value="أ: التوالي، ب: التوازي، ج: قانون أوم، د: المقاومة الكهربائية، هـ: الجهد الكهربائي"> أ: التوالي، ب: التوازي، ج: قانون أوم، د: المقاومة الكهربائية، هـ: الجهد الكهربائي</label>
+                <label><input type="radio" name="q43" value="أ: التوازي، ب: التوالي، ج: قانون أوم، د: الجهد الكهربائي، هـ: المقاومة الكهربائية"> أ: التوازي، ب: التوالي، ج: قانون أوم، د: الجهد الكهربائي، هـ: المقاومة الكهربائية</label>
+                <label><input type="radio" name="q43" value="أ: قانون أوم، ب: التوالي، ج: التوازي، د: المقاومة الكهربائية، هـ: الجهد الكهربائي"> أ: قانون أوم، ب: التوالي، ج: التوازي، د: المقاومة الكهربائية، هـ: الجهد الكهربائي</label>
             </div>
             <div class="feedback"></div>
         </div>
@@ -640,7 +641,7 @@
             <div class="feedback"></div>
         </div>
 
-        <div class="question-item" data-answer="د">
+        <div class="question-item" data-answer="ج">
             <div class="question-title">49. مصباحان على التوالي، قراءة A1 تساوي 0.2 أمبير. أين نضع الأميتر A2 لتصبح قراءته مساوية لـ A1؟</div>
             <div class="question-image-box">
                 <img src="https://i.postimg.cc/FK6VtsgC/mwdʿ-A2-s8.png" alt="موضع الأميتر" class="question-image">
@@ -729,11 +730,15 @@
             <div class="feedback"></div>
         </div>
 
-        <div class="question-item" data-answer="المجموعة الأولى">
-            <div class="question-title">57. من جدول التيار: المجموعة الأولى (3 مصابيح=1.5A، 4 مصابيح=1.12A). المجموعة الثانية (3 مصابيح=13.4A، 4 مصابيح=18A). أيهما موصلة على التوالي؟</div>
-            <div class="options grid-2">
-                <label><input type="radio" name="q57" value="المجموعة الأولى"> المجموعة الأولى (لأن التيار قل)</label>
-                <label><input type="radio" name="q57" value="المجموعة الثانية"> المجموعة الثانية (لأن التيار زاد)</label>
+        <div class="question-item" data-answer="الأولى، الثانية، الأولى، الثانية">
+            <div class="question-title">57. أجب عن الأسئلة التالية (أ، ب، ت، ث) بناءً على جدول التيار المجاور بالترتيب الصحيح.</div>
+            <div class="question-image-box">
+                <img src="https://i.postimg.cc/B6L6yJMj/s11-s15.png" alt="جدول التيار والأسئلة" class="question-image">
+            </div>
+            <div class="options">
+                <label><input type="radio" name="q57" value="الأولى، الثانية، الأولى، الثانية"> أ: الأولى | ب: الثانية | ت: الأولى | ث: الثانية</label>
+                <label><input type="radio" name="q57" value="الثانية، الأولى، الثانية، الأولى"> أ: الثانية | ب: الأولى | ت: الثانية | ث: الأولى</label>
+                <label><input type="radio" name="q57" value="الأولى، الأولى، الثانية، الثانية"> أ: الأولى | ب: الأولى | ت: الثانية | ث: الثانية</label>
             </div>
             <div class="feedback"></div>
         </div>
@@ -747,7 +752,7 @@
 </div>
 
 <script>
-    // ضع رابط تطبيق جوجل هنا ليتم حفظ البيانات في ملف الإكسل
+    // رابط تطبيق جوجل لحفظ البيانات في ملف الإكسل
     const googleAppScriptURL = "https://script.google.com/macros/s/AKfycbzc5fVkbwegAw7XzRkGvcp3OmzK9UYslsBuiyJ-IY23DYm_QfAyvsBadgUw0Ob2oIW42w/exec";
 
     function submitQuiz() {
@@ -816,7 +821,7 @@
         btn.style.backgroundColor = "#7f8c8d";
         btn.innerText = "تم التسليم بنجاح";
 
-        if(googleAppScriptURL !== "ضع_رابط_سكربت_جوجل_هنا_كما_شرحت_لك_سابقا" && googleAppScriptURL.startsWith("http")) {
+        if(googleAppScriptURL && googleAppScriptURL.startsWith("http")) {
             fetch(googleAppScriptURL, {
                 method: 'POST',
                 mode: 'no-cors',
